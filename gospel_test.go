@@ -61,3 +61,37 @@ func TestWordsCorrectorCorrectsDeletionMedial(t *testing.T){
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
+func TestWordsCorrectorCorrectsInsertionInitial(t *testing.T){
+  c := OfWords([]string{"knight"})
+
+  corrected, _ := c.Correct("night")
+  assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
+}
+
+func TestWordsCorrectorCorrectsInsertionFinal(t *testing.T){
+  c := OfWords([]string{"knight"})
+
+  corrected, _ := c.Correct("knigh")
+  assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
+}
+
+func TestWordsCorrectorCorrectsInsertionMedial(t *testing.T){
+  c := OfWords([]string{"knight"})
+
+  corrected, _ := c.Correct("kniht")
+  assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
+}
+
+func TestWordsCorrectorCorrectsInsertionAndDeletion(t *testing.T){
+  c := OfWords([]string{"knight"})
+
+  corrected, _ := c.Correct("knihtu")
+  assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
+}
+
+func TestWordsCorrectorCorrectsAcheive(t *testing.T){
+  c := OfWords([]string{"achieve"})
+
+  corrected, _ := c.Correct("acheive")
+  assert.Equal(t, "achieve", corrected, "should have corrected to word 'achieve'")
+}

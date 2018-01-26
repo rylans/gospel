@@ -1,7 +1,6 @@
 package gospel
 
 import (
-  "fmt"
   "errors"
   "io/ioutil"
   "strings"
@@ -27,7 +26,7 @@ func (corr *Corrector) Correct(str string) (string, error) {
     return str, nil
   } 
 
-  for _, word := range edits(str) {
+  for _, word := range editsTwo(str) {
     if corr.Contains(word) {
       return word, nil
     }
@@ -77,6 +76,7 @@ func IsCorrect(str string) (bool, error) {
 }
 
 func edits(word string) []string {
+  letters := strings.Split("abcdefghijklmnopqrstuvwxyz", "")
   splits := []string{}
 
   // deletions
@@ -84,16 +84,31 @@ func edits(word string) []string {
     splits =  append(splits, word[:i] + word[i+1:])
   }
 
+  // inital + medial insertions
+  for i, _ := range word {
+    for j, _ := range letters {
+      splits = append(splits, word[:i] + letters[j] + word[i:])
+    }
+  }
+  
+  // final insertions
+  for j, _ := range letters {
+    splits = append(splits, word + letters[j])
+  }
+
   return splits
 }
 
+func editsTwo(word string) []string {
+  allEdits := edits(word)
+  edits1 := edits(word)
 
-func main(){
-  x := ForEnglish()
-  fmt.Println(x)
-  fmt.Println(x.Contains("scolytus"))
-  fmt.Println(x.Contains("skolytus"))
+  for _, v := range edits1 {
+    for _, k := range edits(v){
+      allEdits = append(allEdits, k)
+    }
+  }
+  return allEdits
 
-  fmt.Println(edits("knight"))
 }
 
