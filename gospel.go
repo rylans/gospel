@@ -2,6 +2,7 @@ package gospel
 
 import (
   "fmt"
+  "errors"
   "io/ioutil"
   "strings"
   "strconv"
@@ -17,8 +18,15 @@ func (corr Corrector) String() string {
 }
 
 func (corr *Corrector) Contains(str string) bool {
-  _, exists := corr.dictionaryWords[str]
+  _, exists := corr.dictionaryWords[strings.ToLower(str)]
   return exists
+}
+
+func (corr *Corrector) Correct(str string) (string, error) {
+  if corr.Contains(str) { 
+    return str, nil
+  } 
+  return "", errors.New("Unable to correct '" + str + "'")
 }
 
 
@@ -33,7 +41,6 @@ func ForEnglish() Corrector {
   numWords := strconv.Itoa(len(dictWords))
   desc := "English spelling corrector (words loaded: " + numWords + ")"
   return Corrector{descriptor: desc, dictionaryWords: dictWords}
-
 }
 
 
