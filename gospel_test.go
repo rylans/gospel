@@ -34,9 +34,9 @@ func TestEnglishCorrectorCorrectsWord(t *testing.T){
 
 func TestEnglishCorrectorFailsToCorrectWord(t *testing.T){
   c := ForEnglish()
-  corrected := c.Correct("Gxsby")
+  corrected := c.Correct("Gxsbyzz")
 
-  assert.Equal(t, "Gxsby", corrected, "should have returned input word")
+  assert.Equal(t, "Gxsbyzz", corrected, "should have returned input word")
 }
 
 func TestWordsCorrectorCorrectsDeletionInitial(t *testing.T){
@@ -95,10 +95,16 @@ func TestWordsCorrectorCorrectsAcheive(t *testing.T){
   assert.Equal(t, "achieve", corrected, "should have corrected to word 'achieve'")
 }
 
+func TestEnglishCorrectorCorrectsCommonWordThe(t *testing.T){
+  c := ForEnglish()
+  assert.Equal(t, "the", c.Correct("the"))
+  assert.Equal(t, "the", c.Correct("thi"))
+  assert.Equal(t, "the", c.Correct("teh"))
+}
+
 func TestEnglishCorrectorCorrectsCommonWordThis(t *testing.T){
   c := ForEnglish()
   assert.Equal(t, "this", c.Correct("this"))
-  assert.Equal(t, "this", c.Correct("thi"))
   assert.Equal(t, "this", c.Correct("thiss"))
 }
 
@@ -107,4 +113,18 @@ func TestEnglishCorrectorCorrectsCommonWordWhich(t *testing.T){
   assert.Equal(t, "which", c.Correct("which"))
   assert.Equal(t, "which", c.Correct("whch"))
   assert.Equal(t, "which", c.Correct("whih"))
+}
+
+func TestWordsCorrectorCorrectsTransposition(t *testing.T){
+  c := OfWords([]string{"knight"})
+
+  corrected := c.Correct("tnighk")
+  assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
+}
+
+func TestWordsCorrectorCorrectsComplexEdit(t *testing.T){
+  c := OfWords([]string{"zygomycetes"})
+
+  corrected := c.Correct("zgomyteces")
+  assert.Equal(t, "zygomycetes", corrected, "should have corrected to word 'zygomycetes'")
 }

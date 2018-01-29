@@ -79,7 +79,11 @@ func loadFrequentWords(dictWords map[string]int){
 	     "is", "for", "as", "had", "you", "not",
 	     "be", "her", "on", "at", "by", "which",
 	     "have", "or", "from", "this", "him", "but",
-	     "all", "she", "they", "were", "my", "are"},
+	     "all", "she", "they", "were", "my", "are",
+	     "me", "one", "their", "so", "an", "said",
+	     "them", "we", "who", "would", "been", "will",
+	     "no", "when", "there", "if", "more", "out",
+	     "up", "into", "do", "any", "you", "what"},
     dictWords)
 }
 
@@ -135,6 +139,25 @@ func edits(word string) []string {
   for j, _ := range letters {
     splits = append(splits, word + letters[j])
   }
+
+  // replacements
+  for i, _ := range word {
+    for j, _ := range letters {
+	splits = append(splits, word[:i] + letters[j] + word[i+1:])
+    }
+  }
+
+  // transposes
+  for i, _ := range word {
+    swapChar := string(word[i])
+    for j, _ := range word[i+1:] {
+	swapDestination := string(word[i+1+j])
+	trans := word[:i] + swapDestination + word[i+1:i+j+1] + swapChar + word[i+j+2:]
+	splits = append(splits, trans)
+    }
+  }
+
+  // everything before swapChar + swapDest + swapChar + everything after swapDest
 
   return splits
 }
