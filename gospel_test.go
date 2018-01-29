@@ -27,71 +27,84 @@ func TestEnglishCorrectorContainsWord(t *testing.T){
 
 func TestEnglishCorrectorCorrectsWord(t *testing.T){
   c := ForEnglish()
-  corrected, _ := c.Correct("Gospel")
+  corrected := c.Correct("Gospel")
 
   assert.Equal(t, "Gospel", corrected, "should have corrected 'gospel'")
 }
 
 func TestEnglishCorrectorFailsToCorrectWord(t *testing.T){
   c := ForEnglish()
-  corrected, err := c.Correct("Gxsby")
+  corrected := c.Correct("Gxsby")
 
-  assert.Equal(t, "", corrected, "should have returned empty string")
-  assert.NotNil(t, err, "should have returned an error")
+  assert.Equal(t, "Gxsby", corrected, "should have returned input word")
 }
 
 func TestWordsCorrectorCorrectsDeletionInitial(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("zknight")
+  corrected := c.Correct("zknight")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsDeletionFinal(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("knightx")
+  corrected := c.Correct("knightx")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsDeletionMedial(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("knieght")
+  corrected := c.Correct("knieght")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsInsertionInitial(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("night")
+  corrected := c.Correct("night")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsInsertionFinal(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("knigh")
+  corrected := c.Correct("knigh")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsInsertionMedial(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("kniht")
+  corrected := c.Correct("kniht")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsInsertionAndDeletion(t *testing.T){
   c := OfWords([]string{"knight"})
 
-  corrected, _ := c.Correct("knihtu")
+  corrected := c.Correct("knihtu")
   assert.Equal(t, "knight", corrected, "should have corrected to word 'knight'")
 }
 
 func TestWordsCorrectorCorrectsAcheive(t *testing.T){
   c := OfWords([]string{"achieve"})
 
-  corrected, _ := c.Correct("acheive")
+  corrected := c.Correct("acheive")
   assert.Equal(t, "achieve", corrected, "should have corrected to word 'achieve'")
+}
+
+func TestEnglishCorrectorCorrectsCommonWordThis(t *testing.T){
+  c := ForEnglish()
+  assert.Equal(t, "this", c.Correct("this"))
+  assert.Equal(t, "this", c.Correct("thi"))
+  assert.Equal(t, "this", c.Correct("thiss"))
+}
+
+func TestEnglishCorrectorCorrectsCommonWordWhich(t *testing.T){
+  c := ForEnglish()
+  assert.Equal(t, "which", c.Correct("which"))
+  assert.Equal(t, "which", c.Correct("whch"))
+  assert.Equal(t, "which", c.Correct("whih"))
 }
