@@ -128,3 +128,31 @@ func TestWordsCorrectorCorrectsComplexEdit(t *testing.T){
   corrected := c.Correct("zgomyteces")
   assert.Equal(t, "zygomycetes", corrected, "should have corrected to word 'zygomycetes'")
 }
+
+func TestEnglishCorrectorSplitsTheDifference(t *testing.T){
+  c := ForEnglish()
+
+  corrected := c.Correct("thedifference")
+  assert.Equal(t, "the difference", corrected, "should have corrected word to 'the difference'")
+}
+
+func TestEnglishCorrectorSplitsFreeGift(t *testing.T){
+  c := ForEnglish()
+
+  corrected := c.Correct("freegift")
+  assert.Equal(t, "free gift", corrected, "should have corrected word to 'free gift'")
+}
+
+func TestEnglishCorrectorDoesNotSplitDoorknob(t *testing.T){
+  c := ForEnglish()
+
+  cx := c.Correct("doorknob")
+  assert.Equal(t, "doorknob", cx, "No change expected for word 'doorknob'")
+}
+
+func TestEnglishCorrectorDoesNotSplitButterfly(t *testing.T){
+  c := ForEnglish()
+
+  cx := c.Correct("butterfly")
+  assert.Equal(t, "butterfly", cx, "No change expected for word 'butterfly'")
+}

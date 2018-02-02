@@ -4,11 +4,13 @@ import (
   "io/ioutil"
   "strings"
   "strconv"
+  "github.com/rylans/frequencytrie"
 )
 
 type Corrector struct {
   descriptor string
   dictionaryWords map[string]int
+  prefixTrie *frequencytrie.TrieNode
 }
 
 func (corr Corrector) String() string {
@@ -34,6 +36,10 @@ func (corr *Corrector) Correct(str string) string {
     return candidate
   }
 
+  if candidate, hasSplit := corr.splits(str); hasSplit {
+    return candidate
+  }
+
   candidate = corr.maxCandidate(editsTwo(str))
   if candidate == "" {
     return str
@@ -56,20 +62,32 @@ func (corr *Corrector) maxCandidate(candidateWords []string) string {
   return maxWord
 }
 
+func loadTrieWords(words []string, n *frequencytrie.TrieNode){
+  for _, w := range words {
+    n.Insert(w)
+  }
+}
+
 // Corrector builders
 func ForEnglish() Corrector {
-  dictWords := makeDictOfWords(readWords())
+  words := readWords()
+  trie := frequencytrie.ForCharacters()
+  loadTrieWords(words, &trie)
+
+  dictWords := makeDictOfWords(words)
   loadFrequentWords(dictWords)
   numWords := strconv.Itoa(len(dictWords))
   desc := "English spelling corrector (words loaded: " + numWords + ")"
-  return Corrector{descriptor: desc, dictionaryWords: dictWords}
+  return Corrector{descriptor: desc, dictionaryWords: dictWords, prefixTrie: &trie}
 }
 
 func OfWords(words []string) Corrector {
+  trie := frequencytrie.ForCharacters()
+  loadTrieWords(words, &trie)
   dictWords := makeDictOfWords(words)
   numWords := strconv.Itoa(len(dictWords))
   desc := "Spelling corrector (words loaded: " + numWords + ")"
-  return Corrector{descriptor: desc, dictionaryWords: dictWords}
+  return Corrector{descriptor: desc, dictionaryWords: dictWords, prefixTrie: &trie}
 }
 
 func loadFrequentWords(dictWords map[string]int){
@@ -117,6 +135,33 @@ func IsCorrect(str string) (bool, error) {
   } else {
     return false, nil
   }
+}
+
+func splitAtSurprisingIndex(str string, tree *frequencytrie.TrieNode) (string, bool) {
+  tp := tree.TransitionProbabilities(str)
+  ix := mostSurprising(tp)
+  if tree.Contains(str[ix:]) && !tree.Contains(str) {
+    return str[:ix] + " " + str[ix:], true
+  }
+  return str, false
+}
+
+func mostSurprising(transitions []frequencytrie.TransitionChance) int {
+  minv := 1.0
+  minix := 0
+
+  for i, v := range transitions {
+    if v.Probability < minv {
+      minv = v.Probability
+      minix = i
+    }
+  }
+  return minix
+}
+
+func (c *Corrector) splits(word string) (string, bool) {
+  str, hasSplit := splitAtSurprisingIndex(word, c.prefixTrie)
+  return str, hasSplit
 }
 
 func edits(word string) []string {
