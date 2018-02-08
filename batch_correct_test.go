@@ -9,7 +9,7 @@ import (
   "strconv"
 )
 
-const BENCHMARK_CORRECT_PERCENT = 0.45
+const BENCHMARK_CORRECT_PERCENT = 0.55
 
 
 func TestBatchCorrections_Ab(t *testing.T){
@@ -38,6 +38,21 @@ func TestBatchCorrections_Em(t *testing.T){
     ExpectedCorrection{wrong: "emision", right: "emission"},
     ExpectedCorrection{wrong: "emited", right: "emitted"},
     ExpectedCorrection{wrong: "emmediately", right: "immediately"}}
+
+  assertCorrectBenchmark(t, batchCorrectPercent(&c, misspellings))
+}
+
+func TestBatchCorrections_Hi(t *testing.T){
+  c := ForEnglish()
+
+  misspellings := []ExpectedCorrection{
+    ExpectedCorrection{wrong:"hieght", right: "height"},
+    ExpectedCorrection{wrong:"hierachical", right: "hierarchical"},
+    ExpectedCorrection{wrong:"hieroglph", right: "hieroglyph"},
+    ExpectedCorrection{wrong:"higer", right: "higher"},
+    ExpectedCorrection{wrong:"higway", right: "highway"},
+    ExpectedCorrection{wrong:"himselv", right: "himself"},
+    ExpectedCorrection{wrong:"hitsingles", right: "hit singles"}}
 
   assertCorrectBenchmark(t, batchCorrectPercent(&c, misspellings))
 }

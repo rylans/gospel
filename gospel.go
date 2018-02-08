@@ -1,3 +1,4 @@
+// Package gospel implements English spelling correction from a corpus of text.
 package gospel
 
 import (
@@ -7,25 +8,30 @@ import (
   "github.com/rylans/frequencytrie"
 )
 
+// the spelling corrector
 type Corrector struct {
   descriptor string
   dictionaryWords map[string]int
   prefixTrie *frequencytrie.TrieNode
 }
 
+// String returns the description of this spelling corrector
 func (corr Corrector) String() string {
   return corr.descriptor
 }
 
+// Contains returns true if the corrector has been trained on the given string
 func (corr *Corrector) Contains(str string) bool {
   _, exists := corr.dictionaryWords[strings.ToLower(str)]
   return exists
 }
 
-func (corr *Corrector) ValueOf(str string) int {
+func (corr *Corrector) valueOf(str string) int {
   return corr.dictionaryWords[strings.ToLower(str)]
 }
 
+// Correct attempts to fix spelling errors by matching permuations of the input
+// string with the corpus text that this Corrector was trained on
 func (corr *Corrector) Correct(str string) string {
   if corr.Contains(str) { 
     return str
@@ -52,7 +58,7 @@ func (corr *Corrector) maxCandidate(candidateWords []string) string {
   maxWord := ""
   for _, candidateWord := range candidateWords {
     if (corr.Contains(candidateWord)){
-      candidateValue := corr.ValueOf(candidateWord)
+      candidateValue := corr.valueOf(candidateWord)
       if candidateValue > maxVal {
 	maxVal = candidateValue
 	maxWord = candidateWord
@@ -68,7 +74,7 @@ func loadTrieWords(words []string, n *frequencytrie.TrieNode){
   }
 }
 
-// Corrector builders
+// ForEnglish returns a spelling corrector trained on an English dictionary
 func ForEnglish() Corrector {
   words := readWords()
   trie := frequencytrie.ForCharacters()
@@ -81,6 +87,7 @@ func ForEnglish() Corrector {
   return Corrector{descriptor: desc, dictionaryWords: dictWords, prefixTrie: &trie}
 }
 
+// OfWords returns a spelling corrector trained on the given strings
 func OfWords(words []string) Corrector {
   trie := frequencytrie.ForCharacters()
   loadTrieWords(words, &trie)
