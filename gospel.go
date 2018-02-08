@@ -129,14 +129,6 @@ func readWords() []string {
   return strings.Split(string(dat), "\n")
 }
 
-func IsCorrect(str string) (bool, error) {
-  if "correct" == str {
-    return true, nil
-  } else {
-    return false, nil
-  }
-}
-
 func splitAtSurprisingIndex(str string, tree *frequencytrie.TrieNode) (string, bool) {
   tp := tree.TransitionProbabilities(str)
   ix := mostSurprising(tp)
